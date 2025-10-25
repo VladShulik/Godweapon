@@ -12,7 +12,7 @@ local function PardonWeaponRemoverGiver()
     if CLIENT then return end
 
     local function awpn(ply)
-        if !ply:IsPlayer() then return end
+        if not ply:IsPlayer() then return end
         local wpn = ply:GetActiveWeapon()
 
         return ply:Alive() and IsValid(ply) and IsValid(wpn) and wpn:GetClass() == class or false
@@ -20,14 +20,14 @@ local function PardonWeaponRemoverGiver()
 
     local function RemoveCWpn(ply)
         local wpn = ply:GetActiveWeapon()
-        if !IsValid(wpn) then return end
+        if not IsValid(wpn) then return end
 
         if awpn(ply) then
             timer.Simple(0.05, function()
-                if !IsValid(ply) then return end
+                if not IsValid(ply) then return end
                 net.Start("DevplatRestoreColorMats")
                 net.Send(ply)
-            
+
                 ply:SetWalkSpeed(200)
                 ply:SetRunSpeed(500)
                 ply:SetJumpPower(200)
@@ -40,10 +40,10 @@ local function PardonWeaponRemoverGiver()
     local function RemoveWpns(ply)
         if awpn(ply) then
             timer.Simple(0.05, function()
-                if !IsValid(ply) then return end
+                if not IsValid(ply) then return end
                 net.Start("DevplatRestoreColorMats")
                 net.Send(ply)
-            
+
                 ply:SetWalkSpeed(200)
                 ply:SetRunSpeed(500)
                 ply:SetJumpPower(200)
@@ -58,10 +58,10 @@ local function PardonWeaponRemoverGiver()
             if p:HasWeapon(class) and p == ply then
                 if awpn(p) then
                     timer.Simple(0.05, function()
-                        if !IsValid(p) then return end
+                        if not IsValid(p) then return end
                         net.Start("DevplatRestoreColorMats")
                         net.Send(p)
-                    
+
                         p:SetWalkSpeed(200)
                         p:SetRunSpeed(500)
                         p:SetJumpPower(200)
@@ -79,7 +79,7 @@ local function PardonWeaponRemoverGiver()
         wrag_remcwep = RemoveCWpn,
         wrag_remwep = RemoveWpns,
         wrag_remgwep = RemoveAllWpns
-    } 
+    }
 
     timer.Simple(3, function()
         for i, overridde in pairs(ovrConList) do

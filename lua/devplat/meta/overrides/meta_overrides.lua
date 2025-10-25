@@ -21,10 +21,10 @@ local function IsValid(ent)
 end
 
 local function override(meta, key, t, returns)
-    if !meta then meta = _G end
+    if not meta then meta = _G end
 
     local _key = meta[key]
-    if !_key then return end
+    if not _key then return end
 
     meta[key] = function(...)
         local args = {...}
@@ -44,10 +44,10 @@ local function override(meta, key, t, returns)
 end
 
 local function q_override(meta, key, ovr)
-    if !meta then meta = _G end
+    if not meta then meta = _G end
 
     local _key = meta[key]
-    if !_key then return end
+    if not _key then return end
 
     meta[key] = function(...)
         local r, returns = ovr(...)
@@ -103,7 +103,7 @@ function hook.Add(...)
 
     if devplat_hooks[r[2]] then
         return
-    elseif isfunction(call) and fnd(lwr(info(call).source), "devplat/meta/overrides/main_overrides") and !devplat_hooks[r[2]] then
+    elseif isfunction(call) and fnd(lwr(info(call).source), "devplat/meta/overrides/main_overrides") and not devplat_hooks[r[2]] then
         devplat_hooks[r[2]] = true
     end
 

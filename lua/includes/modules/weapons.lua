@@ -16,7 +16,7 @@ local function TableInherit( t, base )
 
 		if ( t[ k ] == nil ) then
 			t[ k ] = v
-		elseif ( k != "BaseClass" && istable( t[ k ] ) && istable( v ) ) then
+               elseif ( k ~= "BaseClass" and istable( t[ k ] ) and istable( v ) ) then
 			TableInherit( t[ k ], v )
 		end
 
@@ -34,7 +34,7 @@ end
 -----------------------------------------------------------]]
 function IsBasedOn( name, base )
 	local t = GetStored( name )
-	if ( !t ) then return false end
+       if ( not t ) then return false end
 	if ( t.Base == name ) then return false end
 
 	if ( t.Base == base ) then return true end
@@ -68,7 +68,7 @@ function Register( t, name )
 	} )
 
 	-- Allow all SWEPS to be duplicated, unless specified
-	if ( !t.DisableDuplicator ) then
+       if ( not t.DisableDuplicator ) then
 		duplicator.Allow( name )
 	end
 
@@ -76,7 +76,7 @@ function Register( t, name )
 	-- If we're reloading this entity class
 	-- then refresh all the existing entities.
 	--
-	if ( old != nil ) then
+       if ( old ~= nil ) then
 
 		-- Update SWEP table of entities that are based on this SWEP
 		for _, e in ipairs( ents.GetAll() ) do
@@ -134,7 +134,7 @@ end
 function Get( name, retval )
 
 	local Stored = GetStored( name )
-	if ( !Stored ) then return nil end
+       if ( not Stored ) then return nil end
 
 	-- Create/copy a new table
 	local retval = retval or {}
@@ -149,11 +149,11 @@ function Get( name, retval )
 
 	-- If we're not derived from ourselves (a base weapon)
 	-- then derive from our 'Base' weapon.
-	if ( retval.Base != name ) then
+       if ( retval.Base ~= name ) then
 
 		local base = Get( retval.Base )
 
-		if ( !base ) then
+               if ( not base ) then
 			Msg( "ERROR: Trying to derive weapon " .. tostring( name ) .. " from non existant SWEP " .. tostring( retval.Base ) .. "!\n" )
 		else
 			retval = TableInherit( retval, base )

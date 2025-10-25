@@ -1,7 +1,7 @@
 --
 
 local function hasdevplat(e)
-    if !isentity(e) or !e:IsPlayer() then return end
+    if not isentity(e) or not e:IsPlayer() then return end
     local wep = e:GetActiveWeapon()
 
     return (IsValid(wep) and wep:GetClass() == 'long_devplat_revolver') or false

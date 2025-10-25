@@ -26,7 +26,6 @@ IncludeAddCS(dir..'devplatMenu.lua')
 IncludeAddCS(dir..'overrides/show_real_info.lua')
 
 local e = FindMetaTable( "Entity" )
-local gm = e.GetModel
 local gc = e.GetClass
 
 hook.Add("OnEntityCreated","devplat_getrealmodel_init",function(ent)
