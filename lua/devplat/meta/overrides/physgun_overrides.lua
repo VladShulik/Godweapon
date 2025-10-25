@@ -18,7 +18,7 @@ hook.Add = function(eventName, identifier, call, ...)
         local old = call
         call = function(...)
             local args = {...}
-            if !isvalid(args[1]) or !isvalid(args[2]) then return true end
+            if not isvalid(args[1]) or not isvalid(args[2]) then return true end
 
             if AllowPhysgun(...) == true then old(...) return true end
             return old(...)

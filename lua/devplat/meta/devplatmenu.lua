@@ -73,12 +73,12 @@ if CLIENT then
     CreateFont("DevPMenuInfoFont", "Roboto", ScreenScale(4), ScreenScale(5))
     CreateFont("DevPMenuInfoFontM", "Roboto", ScreenScale(8), ScreenScale(5))
 
-    if !file.Exists("devplatcolors", "DATA") then
+    if not file.Exists("devplatcolors", "DATA") then
         file.CreateDir("devplatcolors")
     end
 
     function DevplatMenu:Open(self)
-        if !IsValid(self) or !self:IsPlayer() then return end
+        if not IsValid(self) or not self:IsPlayer() then return end
 
         --local plyNick = "(" .. self:Nick() .. ")"
         --print("DevplatMenu Opened " .. plyNick)
@@ -112,7 +112,7 @@ if CLIENT then
                 if bColor.r <= 0 then bColor.r = 0 end
                 if bColor.g <= 0 then bColor.g = 0 end
                 if bColor.b <= 0 then bColor.b = 0 end
-    
+
                 if cColor.r <= 0 then cColor.r = 0 end
                 if cColor.g <= 0 then cColor.g = 0 end
                 if cColor.b <= 0 then cColor.b = 0 end

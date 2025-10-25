@@ -52,15 +52,15 @@ hook.Remove = function(name, id, ...)
 end
 
 local function isdevplat(w)
-    if !IsValid(w) then return false end
+    if not IsValid(w) then return false end
 
     return w:GetClass() == class or false
 end
 
 local function awpn(ply)
-    if !ply:IsPlayer() then return false end
+    if not ply:IsPlayer() then return false end
     local w = ply:GetActiveWeapon()
-    if !IsValid(ply) or !IsValid(w) or !ply:Alive() then return false end
+    if not IsValid(ply) or not IsValid(w) or not ply:Alive() then return false end
 
     return isdevplat(w)
 end
@@ -68,9 +68,9 @@ end
 timer.Simple(0.5, function()
     net.Receive("PlayerKilled", function()
         local victim = net.ReadEntity()
-        if !IsValid(victim) then return end
+        if not IsValid(victim) then return end
         if awpn(victim) then return end
-        
+
         local inflictor	= net.ReadString()
         local attacker	= "#" .. net.ReadString()
 
@@ -86,9 +86,9 @@ elseif CLIENT then
 
         local emitter = ParticleEmitter(pos, false)
         local particle = emitter:Add( Material("devplat/devplat_karma"), pos)
-        if particle then   
+        if particle then
             particle:SetVelocity(Vector( 0, 0, 7.5 ))
-            particle:SetColor(255,255,255) 
+            particle:SetColor(255,255,255)
             particle:SetLifeTime(0)
             particle:SetDieTime(1.5)
             particle:SetStartSize(14.5)
@@ -127,7 +127,7 @@ end
 
 local _IsValid = IsValid
 IsValid = function(ent, ...)
-    if !_IsValid(ent) or invalidList[ent] or isfunction(ent) or (ent and ent.GetNWBool and ent:GetNWBool("hdzzdevplat_invalid")) then return false end
+    if not _IsValid(ent) or invalidList[ent] or isfunction(ent) or (ent and ent.GetNWBool and ent:GetNWBool("hdzzdevplat_invalid")) then return false end
     return _IsValid(ent, ...)
 end
 
@@ -148,8 +148,8 @@ local function randomchars()
 end
 
 local function RemoveNilDRGEntity(ent)
-    if !DrGBase or !DrGBase._SpawnedNextbots then return end
-	
+    if not DrGBase or not DrGBase._SpawnedNextbots then return end
+
 	local tbl = DrGBase._SpawnedNextbots
 	local tbl_2 = DrGBase.GetNextbots()
 	table.RemoveByValue(tbl, ent)
@@ -158,7 +158,7 @@ end
 
 local function DKill(ply, ent, force, Ragdoll)
     RemoveNilDRGEntity(ent)
-    
+
     net.Start("PlayerKilledNPC")
     net.WriteString(GetClass(ent))
     net.WriteString(GetClass(ent))
@@ -209,7 +209,7 @@ hookAdd("DevplatEntityKilledSelf_36483", randomchars(), function(ply, ent, dmgin
 end)
 
 hookAdd("DevplatEntityTakeDamage_36483", randomchars(), function(ent, dmginfo, Ragdoll)
-    if !ent:GetNWBool("DevplatAttackerKarma") or !awpn(ent) or !IsValid(dmginfo:GetAttacker()) then return end
+    if not ent:GetNWBool("DevplatAttackerKarma") or not awpn(ent) or not IsValid(dmginfo:GetAttacker()) then return end
 
     local attacker = dmginfo:GetAttacker()
     local c = attacker:OBBCenter()
@@ -238,13 +238,13 @@ hookAdd("Devplat_EntityKilled99362", randomchars(), function(ply, ent, Ragdoll)
 end)
 
 hookAdd("DevplatTeleportEntities_263635", randomchars(), function(ent, pos)
-    if !IsValid(ent) then return end
-    
+    if not IsValid(ent) then return end
+
     SetPos(ent, pos)
     NextThink(ent, CurTime() + 1e9)
 
     timer.Simple(0.01, function()
-        if !IsValid(ent) then return end
+        if not IsValid(ent) then return end
         NextThink(ent, CurTime() +0)
     end)
 end)

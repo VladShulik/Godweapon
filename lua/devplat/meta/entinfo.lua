@@ -47,8 +47,8 @@ local function DrawHZHud()
     local ply = LocalPlayer()
     local ent = ply:GetEyeTrace().Entity
 
-    if !ply:GetNWBool("DevplatEntityInfo") then return end
-    if !ent or !ent:IsValid() then return end
+    if not ply:GetNWBool("DevplatEntityInfo") then return end
+    if not ent or not ent:IsValid() then return end
     if ent.IsWorld and ent:IsWorld() then return end
 
     local parent = ent:GetParent()

@@ -16,7 +16,7 @@ local E = FindMetaTable("Entity")
 local HardInput = E.Input
 
 local function Awpn(self)
-	if !IsValid(self) or !self:IsPlayer() then return end
+	if not IsValid(self) or not self:IsPlayer() then return end
 	local weapon = self:GetActiveWeapon()
 
 	return (IsValid(weapon) and weapon:GetClass() == class) and true or false
@@ -28,7 +28,7 @@ local SWEP = {
 }
 
 SWEP.PrintName = "Long Devplat Revolver"
-SWEP.Author = "DerHobbyRoller" 
+SWEP.Author = "DerHobbyRoller"
 -- The original author of the Long Revolver
 
 SWEP.Instructions = "Destroy everything."
@@ -96,10 +96,10 @@ local function AddUndoEntity(ply, self, msg, func, ...)
 	if func then
 		undo.AddFunction(func, ...)
 	end
-  	undo.Finish() 
+  	undo.Finish()
   	gamemode.Call("PlayerSpawnedSENT", ply, self)
-  	ply:AddCount("sents", self) 
-  	ply:AddCleanup("sents", self) 
+  	ply:AddCount("sents", self)
+  	ply:AddCleanup("sents", self)
 end
 
 local function IsValidEntity(ent)
@@ -110,14 +110,14 @@ local function IsValidEntity(ent)
 end
 
 local function grm(ent)
-	if !SERVER then return '' end
+	if not SERVER then return '' end
 
 	return ent:GetInternalVariable('model')
 end
 
 local function CreateEntityRagdoll(ent, ply, skin, force)
-    if !IsValid(ent) or IsValid(ent.CorpseRag) then return end
-    
+    if not IsValid(ent) or IsValid(ent.CorpseRag) then return end
+
 	local model = grm(ent)
 	local clr = Color(ent:GetColor().r, ent:GetColor().g, ent:GetColor().b)
     if SERVER and (model and util.IsValidRagdoll(model)) then
@@ -135,7 +135,7 @@ local function CreateEntityRagdoll(ent, ply, skin, force)
 		if IsValid(ply) then
 			AddUndoEntity(ply, ragdoll, ClassName(ent))
 		end
-    
+
         for i = 0, ragdoll:GetPhysicsObjectCount()-1 do
             local bone = ragdoll:GetPhysicsObjectNum(i)
             local pos, ang = ent:GetBonePosition(ragdoll:TranslatePhysBoneToBone(i))
@@ -153,12 +153,12 @@ local function CreateEntityRagdoll(ent, ply, skin, force)
     end
 end
 
-local function NPCKilledNPC(self, enemy, ragdoll, notice, force)
-	enemy.AcceptInput = function() return false end
-	enemy.OnRemove = function(self,...) self:Remove() end
-	enemy.CustomThink = function(self,...) self:Remove() return end
-	enemy.Think = function(self,...) self:Remove() return end
-	enemy:SetNWBool("DevplatRemoved", true)
+local function NPCKilledNPC(self, enemy, shouldCreateRagdoll, notice, force)
+        enemy.AcceptInput = function() return false end
+        enemy.OnRemove = function(self,...) self:Remove() end
+        enemy.CustomThink = function(self,...) self:Remove() return end
+        enemy.Think = function(self,...) self:Remove() return end
+        enemy:SetNWBool("DevplatRemoved", true)
 	enemy:SetNWBool("DEVPLATSilentKilled",true)
 
 	enemy:SetShouldServerRagdoll(false)
@@ -170,7 +170,9 @@ local function NPCKilledNPC(self, enemy, ragdoll, notice, force)
 		end
 	end
 
-	CreateEntityRagdoll(enemy, self, skin, force)
+        if shouldCreateRagdoll then
+                CreateEntityRagdoll(enemy, self, nil, force)
+        end
 
 	net.Start("NPCKilledNPC")
 	net.WriteString( ClassName(enemy) or '' )
@@ -288,7 +290,7 @@ end
 local function FilterEntities(ent)
 	local t = {}
 	for k,v in pairs(ents.GetAll()) do
-		if v != ent then
+		if v ~= ent then
 			table.insert(t, v)
 		end
 	end
@@ -329,7 +331,7 @@ local function EntityRemoveFX(ent)
 end
 
 local function SendLegacy(ply, txt, type, length)
-	if !SERVER then return end
+	if not SERVER then return end
 	net.Start("plySendLegacyGLR")
 	net.WriteString(txt)
 	net.WriteInt(type, 32)
@@ -412,7 +414,7 @@ local function TimeStopEntity(v)
 				local tK = {}
 				local t = v:GetTable()
 				for key, i in pairs(t) do
-					if key != "OnDieFunctions" and isfunction(i) then
+					if key ~= "OnDieFunctions" and isfunction(i) then
 						tK[key] = i
 						oldTimestop[v] = tK
 						v[key] = function() return end
@@ -434,14 +436,14 @@ local function TimeStopEntity(v)
 		for i = 0, v:GetPhysicsObjectCount() - 1 do
 			local p = v:GetPhysicsObjectNum(i)
 			timeStopData[v].TAVel = p:GetAngleVelocity()
-			if IsValid(p) and !p:IsAsleep() then
-				p:EnableMotion(false) 
-			end 
+			if IsValid(p) and not p:IsAsleep() then
+				p:EnableMotion(false)
+			end
 		end
 
-		if IsValid(p) and !p:IsAsleep() then 
-			if p:IsMotionEnabled() then 
-				p:EnableMotion(false) 
+		if IsValid(p) and not p:IsAsleep() then
+			if p:IsMotionEnabled() then
+				p:EnableMotion(false)
 			end
 		end
 	end
@@ -458,11 +460,11 @@ local function UnTimeStopEntity(v)
 		end
 		if timeStopData and timeStopData[v] then
 			local p = v:GetPhysicsObject()
-			if IsValid(p) then 
+			if IsValid(p) then
 				p:EnableMotion(true)
 
 				if v:CreatedByMap() then
-					if !p:IsAsleep() or timeStopData[v].DebrisProp or timeStopData[v].TVel:Length() > 0 then
+					if not p:IsAsleep() or timeStopData[v].DebrisProp or timeStopData[v].TVel:Length() > 0 then
 						p:Wake()
 						p:SetVelocity(timeStopData[v].TVel)
 						if timeStopData[v].TAVel then
@@ -482,7 +484,7 @@ local function UnTimeStopEntity(v)
 					p:EnableMotion(true)
 
 					if v:CreatedByMap() then
-						if !p:IsAsleep() or timeStopData[v].DebrisProp or timeStopData[v].TVel:Length() > 0 then
+						if not p:IsAsleep() or timeStopData[v].DebrisProp or timeStopData[v].TVel:Length() > 0 then
 							p:Wake()
 							p:SetVelocity(timeStopData[v].TVel)
 							if timeStopData[v].TAVel then
@@ -495,7 +497,7 @@ local function UnTimeStopEntity(v)
 							p:AddAngleVelocity(timeStopData[v].TAVel)
 						end
 					end
-				end 
+				end
 			end
 			timeStopData[v] = nil
 		end
@@ -573,23 +575,23 @@ if CLIENT then
 	end)
 
 	net.Receive("DevplatRestoreColorMats", function()
-		if !IsValid(LocalPlayer()) then return end
+		if not IsValid(LocalPlayer()) then return end
 		local vm = LocalPlayer():GetViewModel()
-		if !IsValid(vm) then return end
+		if not IsValid(vm) then return end
 
 		vm:SetColor(Color(255,255,255,255))
 		vm:SetMaterial('')
 
 		local bone = vm:LookupBone("ValveBiped.Bip01_L_Clavicle")
 
-		if !bone then return end
+		if not bone then return end
 		vm:ManipulateBoneAngles( bone, Angle(0,0,0) )
 	end)
 
 	net.Receive("LDLOpenDeleteEntMenu", function()
 		DeleteMenu(LocalPlayer())
 	end)
-	
+
 	net.Receive("plySendLegacyGLR", function()
 		notification.AddLegacy( net.ReadString(), net.ReadInt(32), net.ReadInt(32))
 	end)
@@ -635,7 +637,7 @@ local modeList = modeList or {
 }
 
 function SWEP:Deploy()
-	if !SERVER then return end
+	if not SERVER then return end
 	self.LaserDot = ents.Create("env_laserdot")
 	self.LaserDot:SetOwner(self.Owner)
 	self.LaserDot:SetNoDraw(true)
@@ -645,7 +647,7 @@ function SWEP:Deploy()
 end
 
 function SWEP:Holster()
-	if !SERVER then return end
+	if not SERVER then return end
 
 	if IsValid(self.LaserDot) then
 		self.LaserDot:Remove()
@@ -701,7 +703,7 @@ function SWEP:PrimaryAttack()
 			local rnname = rnn()
 			v:SetSaveValue('m_iName',rnname)
 			RunConsoleCommand('ent_remove_all',rnname)
-		
+
 			local hitPhys = v:GetPhysicsObject()
 			if IsValid(hitPhys) then
 				local vel = (v:GetPos() - self.Owner:GetPos()):GetNormalized()
@@ -789,7 +791,7 @@ function SWEP:Reload()
 	--do return end
 	if CLIENT then return end
 
-	if !self.Owner:GetNWBool("DevplatMenuIsOpened") then
+	if not self.Owner:GetNWBool("DevplatMenuIsOpened") then
 		self.Owner:SetNWBool("DevplatMenuIsOpened",true)
 		net.Start("DevplatOpenFireMenu")
 		net.Send(self.Owner)
@@ -801,7 +803,7 @@ end
 function SWEP:SecondaryAttack()
 	local modeTab = self.DevplatSecondaryTab
 
-	if modeTab != 0 then
+	if modeTab ~= 0 then
 		if modeTab == 1 then
 			if DoEntsExistAll() then
 				self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
@@ -809,7 +811,7 @@ function SWEP:SecondaryAttack()
 				self:EmitSound(ShootSound,75,100,0.2)
 			end
 			for k,v in pairs(ents.GetAll()) do
-				if v:IsNPC() or v:IsNextBot() and SERVER then 
+				if v:IsNPC() or v:IsNextBot() and SERVER then
 					NPCKilledNPC(self.Owner, v, false, true)
 				end
 			end
@@ -826,7 +828,7 @@ function SWEP:SecondaryAttack()
 				self:EmitSound(ShootSound,75,100,0.2)
 			end
 			for k,v in pairs(ents.GetAll()) do
-				if v:IsNPC() and SERVER then 
+				if v:IsNPC() and SERVER then
 					for l,o in pairs(FilterEntities(v)) do
 						v:AddEntityRelationship( o, D_HT, 99 )
 					end
@@ -835,7 +837,7 @@ function SWEP:SecondaryAttack()
 				end
 				if v.SetEnemy then
 					if v.SetSelfClassRelationship and v.IsDrGNextbot then
-						v:SetSelfClassRelationship(D_HT) 
+						v:SetSelfClassRelationship(D_HT)
 						v.Factions = {""}
 						v.SetSelfClassRelationship = function() return end
 					end
@@ -853,12 +855,12 @@ function SWEP:SecondaryAttack()
 				MainAttack(ply, enemy, true)
 				ExplodeEntity(enemy)
 				ply:SetEyeAngles( (GoodEnemyPosition(enemy) - ply:GetShootPos()):Angle() )
-		
+
 				self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
 				self:ShootBullet( 0, 10, 0.01 )
 				self:ShootEffects()
 				self:EmitSound(ShootSound)
-		
+
 				local EF = EffectData()
 				EF:SetOrigin(ply:GetEyeTrace().HitPos)
 				EF:SetStart(ply:GetShootPos())
@@ -903,7 +905,7 @@ function SWEP:SecondaryAttack()
 					r:SetOwner(self.Owner)
 					r:Spawn()
 					r:SetCollisionGroup(20)
-	
+
 					r:CallOnRemove("killNearExplosion", function()
 						for k,v in pairs(ents.FindInSphere(r:GetPos(), 300)) do
 							if v:IsNPC() or v:IsNextBot() then
@@ -914,7 +916,7 @@ function SWEP:SecondaryAttack()
 							end
 						end
 					end)
-	
+
 					local function PhysCallback(e,d)
 						local ef = EffectData()
 						ef:SetOrigin( d.HitPos )
@@ -922,7 +924,7 @@ function SWEP:SecondaryAttack()
 						e:Remove()
 					end
 					r:AddCallback( "PhysicsCollide", PhysCallback )
-	
+
 					local phys = r:GetPhysicsObject()
 					phys:SetVelocity( self.Owner:GetAimVector() * 5000 )
 				end
@@ -946,7 +948,7 @@ function SWEP:SecondaryAttack()
 				local owner = hit:GetNWEntity("GLRUndoListOwner")
 				local model = hit:GetModel()
 				if IsValid(hit) then
-					if !hit:IsPlayer() and ClassName(hit) != "predicted_viewmodel" and model and !hit:GetNWBool("fakePropGR") and !IsValid(owner) then
+					if not hit:IsPlayer() and ClassName(hit) ~= "predicted_viewmodel" and model and not hit:GetNWBool("fakePropGR") and not IsValid(owner) then
 						self.Owner:EmitSound("common/warning.wav",120,100,1,CHAN_AUTO)
 						if SERVER and ply:Visible(hit) then
 							hit:SetNWEntity("GLRUndoListOwner", ply)
@@ -976,8 +978,8 @@ function SWEP:SecondaryAttack()
 			local ply = self.Owner
 			for __, hit in pairs(ents.FindAlongRay(ply:GetShootPos() + ply:GetAimVector() * 75, ply:GetEyeTrace().HitPos, Vector(-10,-10,-10), Vector(10,10,10))) do
 				local filter = {"predicted_viewmodel", "func_precipitation", "beam", ClassName(self)}
-				if !table.HasValue(filter, ClassName(hit)) then
-					if IsValid(hit) and !hit:IsPlayer() then
+				if not table.HasValue(filter, ClassName(hit)) then
+					if IsValid(hit) and not hit:IsPlayer() then
 						local tbl = hit:GetTable()
 						for key, i in pairs(tbl) do
 							if string.EndsWith(key, "Think") or string.EndsWith(key, "Remove") then
@@ -986,7 +988,7 @@ function SWEP:SecondaryAttack()
 						end
 
 						if hit:IsNPC() or hit:IsNextBot() then
-							MainAttack(self.Owner, hit, false) 
+							MainAttack(self.Owner, hit, false)
 						else
 							if SERVER then
 								net.Start('PlayerKilledNPC')
@@ -1055,7 +1057,7 @@ function SWEP:SecondaryAttack()
 
 			local function MainKill(ent)
 				if ent:IsNextBot() or ent:IsNPC() then
-					if ClassName(ent) == "npc_combinegunship" or ClassName(ent) == "npc_helicopter" then FullKill(ent) 
+					if ClassName(ent) == "npc_combinegunship" or ClassName(ent) == "npc_helicopter" then FullKill(ent)
 						ent:CallOnRemove("ldrDeathNotice", function()
 							net.Start("NPCKilledNPC")
 							net.WriteString(ClassName(ent))
@@ -1097,7 +1099,7 @@ function SWEP:SecondaryAttack()
 							local p = ent:GetPhysicsObjectNum(i)
 							if IsValid(p) then
 								p:EnableGravity(false)
-							end 
+							end
 						end
 						SendLegacy(self.Owner, "Entity Gravity Off", 0, 2.5)
 					else
@@ -1106,7 +1108,7 @@ function SWEP:SecondaryAttack()
 							local p = ent:GetPhysicsObjectNum(i)
 							if IsValid(p) then
 								p:EnableGravity(true)
-							end 
+							end
 						end
 						SendLegacy(self.Owner, "Entity Gravity On", 0, 2.5)
 					end
@@ -1125,14 +1127,14 @@ function SWEP:SecondaryAttack()
 					r:SetOwner(self.Owner)
 					r:Spawn()
 					--r:SetCollisionGroup(20)
-	
+
 					local function PhysCallback(ent, data)
 						local effect = EffectData() -- Create effect data
 						effect:SetOrigin( ent:GetPos() ) -- Set origin where collision point is
 						util.Effect( "BloodImpact", effect ) -- Spawn small sparky effect
 						ent:Remove()
 						ent:EmitSound("physics/flesh/flesh_squishy_impact_hard2.wav",90,100,1,CHAN_VOICE_BASE)
-	
+
 						for k,v in pairs(ents.FindInSphere(r:GetPos(), 50)) do
 							if v:IsNPC() or v:IsNextBot() then
 								MainAttack(self.Owner, v, true)
@@ -1141,7 +1143,7 @@ function SWEP:SecondaryAttack()
 					end
 					r:AddCallback( "PhysicsCollide", PhysCallback )
 					invulnerableList[r] = true
-	
+
 					local phys = r:GetPhysicsObject()
 					phys:SetVelocity( self.Owner:GetAimVector() * 5000 )
 				end
@@ -1175,21 +1177,21 @@ function SWEP:SecondaryAttack()
 					r:SetOwner(self.Owner)
 					r:Spawn()
 					--r:SetCollisionGroup(20)
-	
+
 					local function PhysCallback(ent, data)
-						if !IsValid(ent) then return end
-						if !IsValid(data.HitEntity) then return end
+						if not IsValid(ent) then return end
+						if not IsValid(data.HitEntity) then return end
 						data.HitEntity:SetNWBool("DevplatRemoved", true)
 						MainAttack(self.Owner, data.HitEntity, true)
 					end
-	
+
 					r:AddCallback( "PhysicsCollide", PhysCallback )
 					--invulnerableList[r] = true
-	
+
 					for i = 0, r:GetPhysicsObjectCount() do
 						local phys = r:GetPhysicsObjectNum(i)
-	
-						if !IsValid(phys) then break end
+
+						if not IsValid(phys) then break end
 						phys:SetVelocity( self.Owner:GetAimVector() * 5000 )
 					end
 				end
@@ -1229,13 +1231,13 @@ local find = string.find
 local function OverrideHook(name, override)
     local hookTbl = hook.GetTable()[name]
 	OverridenHook[name] = override
-    if !istable(hookTbl) then return end
+    if not istable(hookTbl) then return end
 
 	for key, call in pairs(hookTbl) do
 		local old = call
 		call = function(...)
 			local isOverrided = override(...)
-			if isOverrided == true and isstring(key) and !find(key, skey) then return end
+			if isOverrided == true and isstring(key) and not find(key, skey) then return end
 
 			return old(unpack({...}))
 		end
@@ -1250,7 +1252,7 @@ hook.Add = function(name, key, call, ...)
 		local old = call
 		call = function(...)
 			local isOverrided = OverridenHook[name](...)
-			if isOverrided == true and !find(key, skey) then return end
+			if isOverrided == true and not find(key, skey) then return end
 
 			return old(unpack({...}))
 		end
@@ -1266,25 +1268,25 @@ local function RepeatOverlaySound(data, num)
 end
 
 local function qfunction(meta, func, ovr)
-	if !meta[func] then return end
+	if not meta[func] then return end
 	local old = meta[func]
 	meta[func] = function(...)
 		local args = {...}
 
-		if args[#args] == skey then 
-			return old(unpack{...}) 
+		if args[#args] == skey then
+			return old(unpack{...})
 		end
 
 		if ovr(...) == true then return end
-		
+
 		return old(unpack{...})
 	end
 end
 
 -- Fix the errors you get while killing DRG Entities
 local function RemoveNilDRGEntity(ent)
-    if !DrGBase or !DrGBase._SpawnedNextbots then return end
-	
+    if not DrGBase or not DrGBase._SpawnedNextbots then return end
+
 	local tbl = DrGBase._SpawnedNextbots
 	local tbl_2 = DrGBase.GetNextbots()
 	table.RemoveByValue(tbl, ent)
@@ -1292,7 +1294,7 @@ local function RemoveNilDRGEntity(ent)
 end
 
 hookAdd("EntityTakeDamage", "DevplatEntityTakeDamageControl", function(ent, dmginfo)
-	if !ent:IsPlayer() then return end
+	if not ent:IsPlayer() then return end
 	hook.Run("DevplatEntityTakeDamage_36483", ent, dmginfo, CreateEntityRagdoll)
 end)
 
@@ -1314,7 +1316,7 @@ hook.Call = function(event, t, ...)
 end
 
 qfunction(E, "TakeDamage", function(ent, dmg, attacker)
-	if !IsValid(ent) or !ent:IsPlayer() or !IsValid(attacker) then return end
+	if not IsValid(ent) or not ent:IsPlayer() or not IsValid(attacker) then return end
 	local dmginfo = DamageInfo()
 	dmginfo:SetAttacker(attacker)
 
@@ -1322,7 +1324,7 @@ qfunction(E, "TakeDamage", function(ent, dmg, attacker)
 end)
 
 qfunction(E, "TakeDamageInfo", function(ent, dmginfo)
-	if !IsValid(ent) or !ent:IsPlayer() then return end
+	if not IsValid(ent) or not ent:IsPlayer() then return end
 
 	hook.Run("DevplatEntityTakeDamage_36483", ent, dmginfo, CreateEntityRagdoll)
 end)
@@ -1403,10 +1405,10 @@ hookAdd("PlayerSwitchWeapon", "DevplatRemoveColorStuff", function(ply, old, new)
 	if not SERVER then return end
 	if IsValid(old) and old:GetClass() == class then
 		timer.Simple(0.05, function()
-			if !IsValid(ply) then return end
+			if not IsValid(ply) then return end
 			net.Start("DevplatRestoreColorMats")
 			net.Send(ply)
-		
+
 			ply:SetWalkSpeed(200)
 			ply:SetRunSpeed(400)
 			ply:SetJumpPower(200)
@@ -1435,7 +1437,7 @@ hookAdd("OnEntityCreated","TimeStopGLR",function(e)
 			else
 				if e:CreatedByMap() then
 					timer.Simple(3, function()
-						if IsValid(e) and IsValid(p) and !p:IsAsleep() then
+						if IsValid(e) and IsValid(p) and not p:IsAsleep() then
 							TimeStopEntity(e)
 						end
 					end)
@@ -1460,15 +1462,15 @@ OverrideHook("Think", function()
 end)
 
 OverrideHook("EntityRemoved", function(ent)
-    if SERVER and ent:GetNWBool("DevplatRemoved") then 
-		if ent.IsDrGNextbot then 
-			timer.Simple(0.1, function() 
-				--RemoveNullEntsDRG() 
-			end) 
+    if SERVER and ent:GetNWBool("DevplatRemoved") then
+		if ent.IsDrGNextbot then
+			timer.Simple(0.1, function()
+				--RemoveNullEntsDRG()
+			end)
 
-			return true 
+			return true
 		end
-		
+
 		return true
 	end
 end)

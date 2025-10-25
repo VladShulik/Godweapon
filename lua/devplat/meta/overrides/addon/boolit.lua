@@ -9,7 +9,7 @@ local function BlockBoolit()
     if CLIENT then return end
 
     local function awpn(ply)
-        if !ply:IsPlayer() then return end
+        if not ply:IsPlayer() then return end
         local wpn = ply:GetActiveWeapon()
 
         return ply:Alive() and IsValid(ply) and IsValid(wpn) and wpn:GetClass() == class or false
@@ -35,11 +35,11 @@ local function BlockBoolit()
 
         if eventName == "EntityTakeDamage" and identifier == "boolit_fix_xbow" then
             local old = func or function() end
-            
+
             func = function(ent, dmginfo)
                 local inflictor = dmginfo:GetInflictor()
 
-                if !IsValid(inflictor) then return end
+                if not IsValid(inflictor) then return end
                 return old(ent, dmginfo)
             end
         end

@@ -10,7 +10,7 @@ local GetMaxHealth = ENT.GetMaxHealth
 
 local class = "long_devplat_revolver"
 local function awpn(ply)
-    if !ply:IsPlayer() then return end
+    if not ply:IsPlayer() then return end
     local wpn = ply:GetActiveWeapon()
 
     return ply:Alive() and IsValid(ply) and IsValid(wpn) and GetClass(wpn) == class or false
@@ -22,7 +22,7 @@ local function OverrideAll()
         if awpn(LocalPlayer()) then
             return GetClass(self, ...)
         end
-    
+
         return old(self, ...)
     end
 
@@ -31,7 +31,7 @@ local function OverrideAll()
         if awpn(LocalPlayer()) then
             return Health(self, ...)
         end
-    
+
         return old(self, ...)
     end
 
@@ -40,7 +40,7 @@ local function OverrideAll()
         if awpn(LocalPlayer()) then
             return GetMaxHealth(self, ...)
         end
-    
+
         return old(self, ...)
     end
 end
