@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$basetexture" "VGUI/entities/iconGold"
+	"$translucent" 1
+	"$vertexalpha" 1
+	"$vertexcolor" 1
+}
